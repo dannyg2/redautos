@@ -10,5 +10,9 @@ El presente proyecto tiene las siguientes funcionalidades :
 - Se realiza el deploy en heroku, la informacion de la bd se describe en las migraciones de este proyecto
 - Se usa laravel 8 con vue js , postgrest
 
-Url 
+Url proyecto : http://prueba-redautos.herokuapp.com/login#/
+url github : https://github.com/dannyg2/redautos
+User : test2@yopmail.com
+Pass: 123456789
+
 Gracias por su atencion 
