@@ -33,6 +33,21 @@ class HomeController extends Controller
     }
 
     public function upload(Request $request){
+        $campos = json_decode($request->campos,true);
+        
+        $validator = validator( $campos+$request->all(),[
+            "name"=>"required",
+            "date"=>"required",
+            "phone"=>"required",
+            "address"=>"required",
+            "credit_card"=>"required",
+            "franchise"=>"required",
+            "email"=>"required",
+            "csv_file"=>"required"
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(),422);
+        }
         $user = Auth::user();
         Excel::import(new ContactImport($request->campos,$user), $request->file('csv_file'), \Maatwebsite\Excel\Excel::CSV);
     }

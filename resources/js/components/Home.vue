@@ -11,13 +11,13 @@
             <br>
             <div id="tabsContent" class="tab-content">
                 <div id="home1" class="tab-pane fade active show">
-                    <upload-file></upload-file>
+                    <upload-file @reloadTable="reloadTable"></upload-file>
                 </div>
                 <div id="profile1" class="tab-pane fade ">
-                    <contacts></contacts>
+                    <contacts-table :contacts="contactsAll"></contacts-table>
                 </div>
                 <div id="messages1" class="tab-pane fade">
-                    <fallidos></fallidos>
+                    <fallidos :fallidos="fallidosAll"></fallidos>
                 </div>
             </div>
             
@@ -28,15 +28,17 @@
 
 <script>
 import UploadFile from "@/components/UploadFiles.vue";
-import Contacts from "@/components/Contact.vue";
+import ContactsTable from "@/components/Contact.vue";
 import Fallidos from "@/components/Fallidos.vue";
 
 
     export default {
-        components:{UploadFile,Contacts,Fallidos},
+        components:{UploadFile,ContactsTable,Fallidos},
         data(){
             return {
             csv_file:"",
+            fallidosAll:[],
+            contactsAll:[],
             campos:{
                 name:""
             },
@@ -46,6 +48,27 @@ import Fallidos from "@/components/Fallidos.vue";
                 sessions: 0,
             }  
         },
+        methods:{
+            getFallidos(){
+                let _this = this;
+                axios.get("admin/fallidos").then(function(response) {
+                    _this.fallidosAll = response.data;
+                }).catch(function(error) {});
+            },
+            getContacts(){
+                let _this = this;
+                axios.get("admin/contacts").then(function(response) {
+                    _this.contactsAll = response.data;
+                }).catch(function(error) {});
+            },
+            reloadTable(){
+                this.getFallidos();
+                this.getContacts();    
+            }
+        },
+        mounted(){
+            this.reloadTable();
+        }
       
        
     }

@@ -33,10 +33,15 @@
 
 <script>
     export default {
-       
+        props:{
+           contacts:{
+               type:Array,
+               default:[]
+           }
+        },
         data() {
             return{
-                contacts:[]
+                
             }
             
         },
@@ -44,12 +49,7 @@
           
         },
         mounted(){
-            let _this = this;
-            axios.get("admin/contacts").then(function(response) {
-                _this.contacts = response.data;
-                console.log(response);
-
-            }).catch(function(error) {});
+            
         }
     }
 </script>

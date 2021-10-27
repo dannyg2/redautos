@@ -2,8 +2,8 @@
   
     <div class="input-group flex-nowrap mt-2">
         <span class="input-group-text" id="addon-wrapping">{{nameDb}}</span>
-        <select v-model="local" class="form-control" @change="selected">
-            <option value="">Select</option>
+        <select v-model="local" class="form-control" @change="selected" required>
+            <option value="">Selecionar</option>
             <option v-for="option,index in options" :value="option" :key="index">{{option}}</option>
         </select>
     </div>
@@ -14,7 +14,8 @@
     export default {
         props:{
             value: {
-                required: true
+                required: true,
+                
             },
             nameDb:{
                 required:true
@@ -25,7 +26,7 @@
         },
         data() {
             return{
-                local:null
+                local:""
             }
             
         },

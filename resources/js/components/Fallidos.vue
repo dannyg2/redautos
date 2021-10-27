@@ -28,10 +28,15 @@
 
 <script>
     export default {
-       
+       props:{
+           fallidos:{
+               type:Array,
+               default:[]
+           }
+       },
         data() {
             return{
-                fallidos:[]
+                //fallidos:[]
             }
             
         },
@@ -39,12 +44,7 @@
           
         },
         mounted(){
-            let _this = this;
-            axios.get("admin/fallidos").then(function(response) {
-                _this.fallidos = response.data;
-                console.log(response);
-
-            }).catch(function(error) {});
+           
         }
     }
 </script>

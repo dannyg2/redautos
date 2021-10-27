@@ -1,11 +1,9 @@
 <template>
     <div class="container">
-
-
-
-            
-
         <div class="row justify-content-center">
+            <div class="alert alert-success" role="alert" v-if="mensaje">
+                Archivo cargado
+            </div>
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">Subsir archivos</div>
@@ -21,14 +19,21 @@
                         <h3>Asocie campos archivo</h3>
 
                         <select-field v-model="campos.name" nameDb="Nombre" :options="headers"></select-field>
-                         <select-field v-model="campos.date" nameDb="Fecha de nacimiento" :options="headers" ></select-field>
-                         <select-field v-model="campos.phone" nameDb="Teléfono" :options="headers" ></select-field>
-                         <select-field v-model="campos.address" nameDb="Dirección" :options="headers" ></select-field>
-                         <select-field v-model="campos.credit_card" nameDb="Tarjeta de crédito" :options="headers" ></select-field>
-                         <select-field v-model="campos.franchise" nameDb="Franquicia" :options="headers" ></select-field>
-                         <select-field v-model="campos.email" nameDb="Correo electrónico" :options="headers" ></select-field>
-
-                        <button @click="contactos" class="btn btn-success">contactos</button>
+                        <span v-if="allerrors.name" :class="['text-danger']">{{ allerrors.name[0] }}</span>
+                        <select-field v-model="campos.date" nameDb="Fecha de nacimiento" :options="headers" ></select-field>
+                        <span v-if="allerrors.date" :class="['text-danger']">{{ allerrors.date[0] }}</span>
+                        <select-field v-model="campos.phone" nameDb="Teléfono" :options="headers" ></select-field>
+                        <span v-if="allerrors.phone" :class="['text-danger']">{{ allerrors.phone[0] }}</span>
+                        <select-field v-model="campos.address" nameDb="Dirección" :options="headers" ></select-field>
+                        <span v-if="allerrors.address" :class="['text-danger']">{{ allerrors.address[0] }}</span>
+                        <select-field v-model="campos.credit_card" nameDb="Tarjeta de crédito" :options="headers" ></select-field>
+                        <span v-if="allerrors.credit_card" :class="['text-danger']">{{ allerrors.credit_card[0] }}</span>
+                        <select-field v-model="campos.franchise" nameDb="Franquicia" :options="headers" ></select-field>
+                        <span v-if="allerrors.franchise" :class="['text-danger']">{{ allerrors.franchise[0] }}</span>
+                        <select-field v-model="campos.email" nameDb="Correo electrónico" :options="headers" ></select-field>
+                        <span v-if="allerrors.email" :class="['text-danger']">{{ allerrors.email[0] }}</span>
+                        <br>
+                        <button @click="contactos" class="btn btn-success">Cargar Archivo</button>
                     </div>
                 </div>
             </div>
@@ -42,15 +47,17 @@ import SelectField from "@/components/SelectField.vue";
         components:{SelectField},
         data(){
             return {
-            csv_file:"",
-            campos:{
-                name:""
-            },
-            report: null,
-                loading: true,
-                headers: [],
-                sessions: 0,
-            }  
+                mensaje:false,
+                csv_file:"",
+                allerrors:[],
+                campos:{
+                    name:""
+                },
+                report: null,
+                    loading: true,
+                    headers: [],
+                    sessions: 0,
+                }  
         },
         mounted() {
             console.log('Component mounted.')
@@ -110,26 +117,8 @@ import SelectField from "@/components/SelectField.vue";
                         return regex.test(letter);
                     }).join("");
                     console.log(item);
-                    return item.normalize("NFD").replaceAll(/[\u0300-\u036f]/g, "").replaceAll(/(\r\n|\n|\r)/gm, "").replaceAll(/['"]+/g, '').replaceAll("/", " ").replaceAll("(", "").replaceAll(")", "").toLowerCase();
+                    return item.normalize("NFD").toLowerCase();
                 });
-
-                for(var i=1;i<lines.length;i++){
-
-                    var obj = {};
-                    var currentline=lines[i].split(";");
-
-                    for(var j=0;j<this.headers.length;j++){
-                        try{
-                            obj[this.headers[j]] = currentline[j] == undefined ? "" : currentline[j].replace(/(\r\n|\n|\r)/gm, "");
-                        }catch (e) {
-                            console.log(this.headers[j], currentline[j], e);
-                        }
-                    }
-                    if(obj["email"] != ''){
-                        result[obj["email"].replaceAll("@", "_").replaceAll(".", "-").toLowerCase()] = obj;
-                    }
-
-                }
 
                 return result;
             },
@@ -137,9 +126,17 @@ import SelectField from "@/components/SelectField.vue";
                 let formData = new FormData();
                 formData.append('csv_file', ((this.csv_file)?this.csv_file:""));
                 formData.append('campos', JSON.stringify(this.campos));
-
+                let _this = this;
                 axios.post("admin/upload", formData).then(function(response) {
-                }).catch(function(error) {});
+                    _this.mensaje = true;
+                    _this.csv_file = "";
+                    _this.campos = {};
+                    _this.headers = [];
+                    this.$emit('reloadTable')
+                }).catch(function(error) {
+                    console.log(error.response);
+                    _this.allerrors = error.response.data;
+                });
             }
         }
     }
